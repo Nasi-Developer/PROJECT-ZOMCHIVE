@@ -8,17 +8,25 @@ namespace ZOMCHIVE
     public class Player : MonoBehaviour
     {
         public PlayerMovementStateMachine movementStateMachine;
+
+        public Rigidbody Rigidbody {  get; private set; }
         public PlayerInput Input {  get; private set; }
+        
+        public Transform MainCameraTransform { get; private set; }
 
         private void Awake()
         {
-            movementStateMachine = new PlayerMovementStateMachine();
+            movementStateMachine = new PlayerMovementStateMachine(this);
+            Input = GetComponent<PlayerInput>();
+            Rigidbody = GetComponent<Rigidbody>();
+
+            MainCameraTransform = Camera.main.transform;
         }
 
         private void Start()
         {
             movementStateMachine.ChangeState(movementStateMachine.IdleState);
-            Input = GetComponent<PlayerInput>();
+            
         }
 
         private void Update()

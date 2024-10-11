@@ -6,6 +6,8 @@ namespace ZOMCHIVE
 {
     public class PlayerRunningState : PlayerMovementState
     {
-        
+        public PlayerRunningState(PlayerMovementStateMachine playerMovementStateMachine) : base(playerMovementStateMachine)
+        {
+        }
     }
 }

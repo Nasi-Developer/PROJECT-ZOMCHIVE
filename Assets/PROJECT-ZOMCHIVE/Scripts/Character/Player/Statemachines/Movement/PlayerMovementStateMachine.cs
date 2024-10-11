@@ -6,17 +6,19 @@ namespace ZOMCHIVE
 {
     public class PlayerMovementStateMachine : StateMachine
     {
+        public Player Player { get; }
         public PlayerIdlingState IdleState { get; }
-        public PlayerWalkingState WalingState { get; }
+        public PlayerWalkingState WalkingState { get; }
         public PlayerRunningState RunningState { get; }
         public PlayerSprintingState SprintingState { get; }
 
-        public PlayerMovementStateMachine()
+        public PlayerMovementStateMachine(Player player)
         {
-            IdleState = new PlayerIdlingState();
-            WalingState = new PlayerWalkingState();
-            RunningState = new PlayerRunningState();
-            SprintingState = new PlayerSprintingState();
+            Player = player;
+            IdleState = new PlayerIdlingState(this);
+            WalkingState = new PlayerWalkingState(this);
+            RunningState = new PlayerRunningState(this);
+            SprintingState = new PlayerSprintingState(this);
         }
     }
 }

@@ -7,6 +7,8 @@ namespace ZOMCHIVE
     [RequireComponent(typeof(PlayerInput))]
     public class Player : MonoBehaviour
     {
+        [field:Header("References")]
+        [field:SerializeField] public PlayerSO Data {  get; private set; }
         public PlayerMovementStateMachine movementStateMachine;
 
         public Rigidbody Rigidbody {  get; private set; }

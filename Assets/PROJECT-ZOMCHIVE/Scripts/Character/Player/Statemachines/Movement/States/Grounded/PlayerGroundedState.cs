@@ -5,21 +5,11 @@ using UnityEngine.InputSystem;
 
 namespace ZOMCHIVE
 {
-    public class PlayerRunningState : PlayerMovingState
+    public class PlayerGroundedState : PlayerMovementState
     {
-        public PlayerRunningState(PlayerMovementStateMachine playerMovementStateMachine) : base(playerMovementStateMachine)
+        public PlayerGroundedState(PlayerMovementStateMachine playerMovementStateMachine) : base(playerMovementStateMachine)
         {
         }
-
-        #region IState Methods
-        public override void StateEnter()
-        {
-            base.StateEnter();
-
-            stateMachine.ReusableData.MovementSpeedModifer = movementData.RunData.SpeedModifer;
-        }
-        #endregion
-
         #region Reuseable Methods
         protected override void AddInputActionsCallbacks()
         {
@@ -27,20 +17,31 @@ namespace ZOMCHIVE
 
             stateMachine.Player.Input.playerActions.Movement.canceled += OnMovementCanceled;
         }
-
+         
         protected override void RemoveInputActionsCallbacks()
         {
             base.RemoveInputActionsCallbacks();
 
             stateMachine.Player.Input.playerActions.Movement.canceled -= OnMovementCanceled;
         }
-        #endregion
-        #region Input Methods
-        protected override void OnWalkToggleStarted(InputAction.CallbackContext context)
-        {
-            base.OnWalkToggleStarted(context);
 
-            stateMachine.ChangeState(stateMachine.WalkingState);
+        protected virtual void OnMove()
+        {
+            if (stateMachine.ReusableData.ShouldWalk)
+            {
+                stateMachine.ChangeState(stateMachine.WalkingState);
+                return;
+            }
+
+            stateMachine.ChangeState(stateMachine.RunningState);
+        }
+
+        #endregion
+
+        #region Input Methods
+        protected virtual void OnMovementCanceled(InputAction.CallbackContext context)
+        {
+            stateMachine.ChangeState(stateMachine.IdleState);
         }
         #endregion
     }

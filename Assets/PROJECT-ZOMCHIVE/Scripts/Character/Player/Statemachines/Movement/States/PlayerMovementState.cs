@@ -2,43 +2,41 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace ZOMCHIVE
 {
     public class PlayerMovementState : IState
     {
         protected PlayerMovementStateMachine stateMachine;
-        protected Vector2 movementInput;
-        protected float baseSpeed = 5f;
-        protected float speedModifer = 1f;
-
-        protected Vector3 currentTargetRotation;
-        protected Vector3 timeToReachTargetRotation;
-        protected Vector3 dampedTargetRotaitonCurrentVelocity;
-        protected Vector3 dampedTargetRotationPassedTime;
+        protected PlayerGroundedData movementData;
 
         public PlayerMovementState(PlayerMovementStateMachine playerMovementStateMachine)
         {
             stateMachine = playerMovementStateMachine;
-
+            movementData = stateMachine.Player.Data.GroundedData;
+            
             InitializeData();
         }
 
         private void InitializeData()
         {
-            timeToReachTargetRotation.y = 0.14f;
+            stateMachine.ReusableData.TimeToReachTargetRotation.y = movementData.BaseRotationData.TargetRotationReachTime.y;
         }
 
         #region IState Interface
         public virtual void StateEnter()
         {
-            Debug.Log("State : " + GetType().Name); 
+            Debug.Log("State : " + GetType().Name);
+
+            AddInputActionsCallbacks();
         }
 
         public virtual void StateExit()
         {
-            
+            RemoveInputActionsCallbacks();
         }
+
         public virtual void HandleInput()
         {
             ReadMovementInput();
@@ -49,7 +47,7 @@ namespace ZOMCHIVE
             Move();
         }
 
-        public void Update()
+        public virtual void Update()
         {
             
         }
@@ -59,12 +57,12 @@ namespace ZOMCHIVE
         #region Main Methods
         private void ReadMovementInput()
         {
-            movementInput = stateMachine.Player.Input.playerActions.Movement.ReadValue<Vector2>();
+            stateMachine.ReusableData.MovementInput = stateMachine.Player.Input.playerActions.Movement.ReadValue<Vector2>();
         }
 
         private void Move()
         {
-            if (movementInput == Vector2.zero || speedModifer == 0f)
+            if (stateMachine.ReusableData.MovementInput == Vector2.zero || stateMachine.ReusableData.MovementSpeedModifer == 0f)
             {
                 return;
             }
@@ -102,9 +100,9 @@ namespace ZOMCHIVE
 
         private void UpdateTargetRotationData(float targetAngle)
         {
-            currentTargetRotation.y = targetAngle;
+            stateMachine.ReusableData.CurrentTargetRotation.y = targetAngle;
 
-            dampedTargetRotationPassedTime.y = 0f;
+            stateMachine.ReusableData.DampedTargetRotationPassedTime.y = 0f;
         }
 
         private float AddCameraRotationtoAngle(float directionAngle)
@@ -142,11 +140,11 @@ namespace ZOMCHIVE
         #region Reuseable Methods
         protected Vector3 GetMovementDirection()
         {
-            return new Vector3(movementInput.x, 0f, movementInput.y);
+            return new Vector3(stateMachine.ReusableData.MovementInput.x, 0f, stateMachine.ReusableData.MovementInput.y);
         }
         protected float GetMovementSpeed()
         {
-            return baseSpeed * speedModifer;
+            return movementData.BaseSpeed * stateMachine.ReusableData.MovementSpeedModifer;
         }
         protected Vector3 GetPlayerHorizontalVelocity()
         {
@@ -162,18 +160,18 @@ namespace ZOMCHIVE
             float currentYAngle = stateMachine.Player.Rigidbody.rotation.eulerAngles.y;
             // 현재 player의 회전 값
 
-            if (currentYAngle == currentTargetRotation.y)
+            if (currentYAngle == stateMachine.ReusableData.CurrentTargetRotation.y)
             {
                 return;
             }
             // 현재 player의 회전 값과, 목표 회전 값이 같으면 return
 
-            float smoothYAngle = Mathf.SmoothDampAngle(currentYAngle, currentTargetRotation.y, 
-            ref dampedTargetRotaitonCurrentVelocity.y, timeToReachTargetRotation.y - dampedTargetRotationPassedTime.y);
+            float smoothYAngle = Mathf.SmoothDampAngle(currentYAngle, stateMachine.ReusableData.CurrentTargetRotation.y, 
+            ref stateMachine.ReusableData.DampedTargetRotationCurrentVelocity.y, stateMachine.ReusableData.TimeToReachTargetRotation.y - stateMachine.ReusableData.DampedTargetRotationPassedTime.y);
 
             // 현재 player의 회전값에서 목표 회전값까지 smoothdampangle을 사용하여 부드럽게 회전 시킨다.
 
-            dampedTargetRotationPassedTime.y += Time.deltaTime;
+            stateMachine.ReusableData.DampedTargetRotationPassedTime.y += Time.deltaTime;
 
             Quaternion targetRotation = Quaternion.Euler(0f, smoothYAngle, 0f);
 
@@ -191,7 +189,7 @@ namespace ZOMCHIVE
                 // 카메라 y축 회전값을 더해준다.
             }
 
-            if (directionAngle != currentTargetRotation.y)
+            if (directionAngle != stateMachine.ReusableData.CurrentTargetRotation.y)
             {
                 UpdateTargetRotationData(directionAngle);
             }
@@ -204,6 +202,28 @@ namespace ZOMCHIVE
         private Vector3 GetTargetRotationDirection(float targetAngle)
         {
             return Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+        }
+
+        protected void ResetVelocity()
+        {
+            stateMachine.Player.Rigidbody.velocity = Vector3.zero;
+        }
+
+        protected virtual void AddInputActionsCallbacks()
+        {
+            stateMachine.Player.Input.playerActions.WalkToggle.started += OnWalkToggleStarted;
+        }
+
+        protected virtual void RemoveInputActionsCallbacks()
+        {
+            stateMachine.Player.Input.playerActions.WalkToggle.started -= OnWalkToggleStarted;
+        }
+        #endregion
+
+        #region Input Methods
+        protected virtual void OnWalkToggleStarted(InputAction.CallbackContext context)
+        {
+            stateMachine.ReusableData.ShouldWalk = !stateMachine.ReusableData.ShouldWalk;
         }
         #endregion
     }

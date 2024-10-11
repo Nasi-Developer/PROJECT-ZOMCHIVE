@@ -6,6 +6,7 @@ namespace ZOMCHIVE
 {
     public class PlayerMovementStateMachine : StateMachine
     {
+        public PlayerStateReusableData ReusableData { get; }
         public Player Player { get; }
         public PlayerIdlingState IdleState { get; }
         public PlayerWalkingState WalkingState { get; }
@@ -15,6 +16,7 @@ namespace ZOMCHIVE
         public PlayerMovementStateMachine(Player player)
         {
             Player = player;
+            ReusableData = new PlayerStateReusableData();
             IdleState = new PlayerIdlingState(this);
             WalkingState = new PlayerWalkingState(this);
             RunningState = new PlayerRunningState(this);

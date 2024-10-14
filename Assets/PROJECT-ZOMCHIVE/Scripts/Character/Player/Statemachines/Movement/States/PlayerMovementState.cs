@@ -144,7 +144,7 @@ namespace ZOMCHIVE
         }
         protected float GetMovementSpeed()
         {
-            return movementData.BaseSpeed * stateMachine.ReusableData.MovementSpeedModifer;
+            return movementData.BaseSpeed * stateMachine.ReusableData.MovementSpeedModifer * stateMachine.ReusableData.MovementOnSlopeSpeedModifer;
         }
         protected Vector3 GetPlayerHorizontalVelocity()
         {
@@ -153,6 +153,11 @@ namespace ZOMCHIVE
             playerHorizontalVelocity.y = 0f;
 
             return playerHorizontalVelocity;
+        }
+
+        protected Vector3 GetPlayerVerticalVelocity()
+        {
+            return new Vector3(0f, stateMachine.Player.Rigidbody.velocity.y, 0f);
         }
 
         protected void RotateTowardsTargetRotation()

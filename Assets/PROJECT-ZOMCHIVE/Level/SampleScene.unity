@@ -3458,6 +3458,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <Data>k__BackingField: {fileID: 11400000, guid: 3a8fca40f1ac25949960cbedcda8c056, type: 2}
+  <ColliderUtility>k__BackingField:
+    <DefaultColliderData>k__BackingField: {fileID: 0}
+    <SlopeData>k__BackingField:
+      <StepHeightPercent>k__BackingField: 0.213
 --- !u!114 &1186223557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3477,7 +3481,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1186223554}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 6aef1966e85c3c046902d7dfa4368480, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

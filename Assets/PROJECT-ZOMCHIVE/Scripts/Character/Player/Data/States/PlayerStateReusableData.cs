@@ -44,5 +44,7 @@ namespace ZOMCHIVE
                 return ref dampedTargetRotationPassedTime;
             }
         }
+
+        public PlayerRotationData RotationData { get; internal set; }
     }
 }

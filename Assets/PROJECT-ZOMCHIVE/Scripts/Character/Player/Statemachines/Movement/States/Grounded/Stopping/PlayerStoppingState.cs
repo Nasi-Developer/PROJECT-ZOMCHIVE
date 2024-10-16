@@ -25,6 +25,8 @@ namespace ZOMCHIVE
         {
             base.PhysicsUpdate();
 
+            RotateTowardsTargetRotation();
+
             if (!IsMovingHorizontally()) // 플레이어의 리지드바디가 움직이지 않고 있다면, 
             {
                 return;

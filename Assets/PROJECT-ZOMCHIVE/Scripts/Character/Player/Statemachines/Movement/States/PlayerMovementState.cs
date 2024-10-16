@@ -21,7 +21,7 @@ namespace ZOMCHIVE
 
         private void InitializeData()
         {
-            stateMachine.ReusableData.TimeToReachTargetRotation.y = movementData.BaseRotationData.TargetRotationReachTime.y;
+            SetBaseRotationData();
         }
 
         #region IState Interface
@@ -253,6 +253,11 @@ namespace ZOMCHIVE
             return playerHorizontalMovement.magnitude > minimumMagnitude;
 
             // 플레이어의 리지드바디의 Velocity가 0.1f 이상이면 true, 아니면 false
+        }
+        protected void SetBaseRotationData()
+        {
+            stateMachine.ReusableData.RotationData = movementData.BaseRotationData;
+            stateMachine.ReusableData.TimeToReachTargetRotation.y = stateMachine.ReusableData.RotationData.TargetRotationReachTime.y;
         }
         #endregion
 

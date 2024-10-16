@@ -12,9 +12,10 @@ namespace ZOMCHIVE
         private PlayerDashData dashData;
         private float startTime; // 대쉬 사용 시간
         private int consecutiveDashesUsed; // 연속 대쉬 사용 수(카운트)
+        private bool shouldKeepRotating;
         public PlayerDashingState(PlayerMovementStateMachine playerMovementStateMachine) : base(playerMovementStateMachine)
         {
-            dashData = movementData.DashData;
+            dashData = movementData.DashData;   
         }
 
         #region IState Methods
@@ -23,12 +24,34 @@ namespace ZOMCHIVE
             base.StateEnter();
 
             stateMachine.ReusableData.MovementSpeedModifer = dashData.SpeedModifier;
+            stateMachine.ReusableData.RotationData = dashData.RotationData;
 
             AddForceOnTransitionFromStationaryState();
+
+            shouldKeepRotating = stateMachine.ReusableData.MovementInput != Vector2.zero;
 
             UpdateConsecutiveDashes(); 
 
             startTime = Time.time;
+        }
+
+        public override void StateExit()
+        {
+            base.StateExit();
+
+            SetBaseRotationData();
+        }
+
+        public override void PhysicsUpdate()
+        {
+            base.PhysicsUpdate();
+
+            if (!shouldKeepRotating)
+            {
+                return;
+            }
+
+            RotateTowardsTargetRotation();
         }
 
         public override void OnAnimationEnterEvent()
@@ -48,7 +71,7 @@ namespace ZOMCHIVE
         #endregion
 
         #region Main Methods
-        private void AddForceOnTransitionFromStationaryState()
+        private void AddForceOnTransitionFromStationaryState() // 움직이지 않는 상태에서 대쉬할 때 Force
         {
             if(stateMachine.ReusableData.MovementInput != Vector2.zero)
             {
@@ -59,6 +82,8 @@ namespace ZOMCHIVE
             // GetMovementDirection()을 재사용하면 될 것 같은데..
 
             characterRotationDirection.y = 0f;
+
+            UpdateTargetRotation(characterRotationDirection, false);
 
             stateMachine.Player.Rigidbody.velocity = characterRotationDirection * GetMovementSpeed();
         }
@@ -86,6 +111,20 @@ namespace ZOMCHIVE
         }
         #endregion
 
+        #region Reusable Methods
+        protected override void AddInputActionsCallbacks()
+        {
+            base.AddInputActionsCallbacks();
+
+            stateMachine.Player.Input.playerActions.Movement.performed += OnMovementPerfomed;
+        }
+
+        protected override void RemoveInputActionsCallbacks()
+        {
+            stateMachine.Player.Input.playerActions.Movement.performed -= OnMovementPerfomed;
+        }
+        #endregion
+
         #region Input Methods
         protected override void OnDashStarted(InputAction.CallbackContext context)
         {
@@ -95,6 +134,10 @@ namespace ZOMCHIVE
         protected override void OnMovementCanceled(InputAction.CallbackContext context)
         {
             
+        }
+        private void OnMovementPerfomed(InputAction.CallbackContext context)
+        {
+            shouldKeepRotating = true;  
         }
         #endregion
     }

@@ -13,5 +13,7 @@ namespace ZOMCHIVE
         [field: SerializeField][field: Range(1f, 10f)] public float ConsecutiveDashsLimitAmount { get; private set; } = 2f;
         [field: SerializeField][field: Range(0f, 5f)] public float DashLimitReachedCooldown { get; private set; } = 1.75f;
 
+        [field: SerializeField] public PlayerRotationData RotationData { get; private set; } 
+
     }
 }

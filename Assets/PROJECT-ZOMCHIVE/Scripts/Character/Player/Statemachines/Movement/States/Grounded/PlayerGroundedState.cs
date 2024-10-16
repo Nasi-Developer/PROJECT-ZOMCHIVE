@@ -23,14 +23,8 @@ namespace ZOMCHIVE
            
         }
 
-        private float SetSlopeSpeedModiferOnAngle(float angle)
-        {
-            float slopeSpeedModifier = movementData.SlopeSpeedAngles.Evaluate(angle);
+        #endregion
 
-            stateMachine.ReusableData.MovementOnSlopeSpeedModifer = slopeSpeedModifier;
-
-            return slopeSpeedModifier;
-        }
         #region Main Methods
         private void Float()
         {
@@ -70,7 +64,16 @@ namespace ZOMCHIVE
                 // 수직 힘이라 겹쳐도 상관 X
             }
         }
-        #endregion
+
+        private float SetSlopeSpeedModiferOnAngle(float angle)
+        {
+            float slopeSpeedModifier = movementData.SlopeSpeedAngles.Evaluate(angle);
+
+            stateMachine.ReusableData.MovementOnSlopeSpeedModifer = slopeSpeedModifier;
+
+            return slopeSpeedModifier;
+        }
+
         #endregion
         #region Reuseable Methods
         protected override void AddInputActionsCallbacks()
@@ -89,7 +92,7 @@ namespace ZOMCHIVE
             stateMachine.Player.Input.playerActions.Dash.started -= OnDashStarted;
         }
 
-        protected virtual void OnMove()
+        protected virtual void OnMove() // 이동 상태 업데이트 함수
         {
             if (stateMachine.ReusableData.ShouldWalk)
             {

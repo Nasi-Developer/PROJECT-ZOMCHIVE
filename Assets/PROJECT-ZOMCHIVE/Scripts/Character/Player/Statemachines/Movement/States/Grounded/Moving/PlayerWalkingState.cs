@@ -29,6 +29,11 @@ namespace ZOMCHIVE
 
             stateMachine.ChangeState(stateMachine.RunningState);
         }
+
+        protected override void OnMovementCanceled(InputAction.CallbackContext context)
+        {
+            stateMachine.ChangeState(stateMachine.LightStoppingState);
+        }
         #endregion
     }
 }

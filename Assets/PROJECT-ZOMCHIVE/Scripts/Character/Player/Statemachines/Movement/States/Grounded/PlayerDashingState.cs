@@ -37,7 +37,7 @@ namespace ZOMCHIVE
 
             if (stateMachine.ReusableData.MovementInput == Vector2.zero)
             {
-                stateMachine.ChangeState(stateMachine.IdleState);
+                stateMachine.ChangeState(stateMachine.HardStoppingState);
 
                 return;
             }

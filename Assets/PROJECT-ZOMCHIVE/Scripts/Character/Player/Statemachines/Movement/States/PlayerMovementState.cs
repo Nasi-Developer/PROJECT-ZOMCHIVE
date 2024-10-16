@@ -236,6 +236,24 @@ namespace ZOMCHIVE
         {
             stateMachine.Player.Input.playerActions.WalkToggle.started -= OnWalkToggleStarted;
         }
+
+        protected void DecelerateHorizontally() // 감속 함수
+        {
+            Vector3 playerHorizontalVelocity = GetPlayerHorizontalVelocity();
+
+            stateMachine.Player.Rigidbody.AddForce(-playerHorizontalVelocity * stateMachine.ReusableData.MovementDecelerationForce, ForceMode.Acceleration);
+        }
+
+        protected bool IsMovingHorizontally(float minimumMagnitude = 0.1f)
+        {
+            Vector3 playerHorizontalVelocity = GetPlayerHorizontalVelocity();
+
+            Vector2 playerHorizontalMovement = new Vector2(playerHorizontalVelocity.x, playerHorizontalVelocity.z);
+
+            return playerHorizontalMovement.magnitude > minimumMagnitude;
+
+            // 플레이어의 리지드바디의 Velocity가 0.1f 이상이면 true, 아니면 false
+        }
         #endregion
 
         #region Input Methods

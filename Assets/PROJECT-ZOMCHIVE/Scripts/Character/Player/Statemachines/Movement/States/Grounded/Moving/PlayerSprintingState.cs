@@ -85,13 +85,13 @@ namespace ZOMCHIVE
 
             stateMachine.Player.Input.playerActions.Sprint.performed -= OnSprintPerformed;
         }
-
-        #endregion
-
-        #region Reusable Methods
         private void OnSprintPerformed(InputAction.CallbackContext context)
         {
             keepSprinting = true;
+        }
+        protected override void OnMovementCanceled(InputAction.CallbackContext context)
+        {
+            stateMachine.ChangeState(stateMachine.HardStoppingState);
         }
         #endregion
     }

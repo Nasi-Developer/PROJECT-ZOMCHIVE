@@ -9,5 +9,14 @@ namespace ZOMCHIVE
         public PlayerLightStoppingState(PlayerMovementStateMachine playerMovementStateMachine) : base(playerMovementStateMachine)
         {
         }
+
+        #region IState Methods
+        public override void StateEnter()
+        {
+            base.StateEnter();
+            stateMachine.ReusableData.MovementDecelerationForce = movementData.StopData.LightDecelerationForce;
+        }
+
+        #endregion
     }
 }

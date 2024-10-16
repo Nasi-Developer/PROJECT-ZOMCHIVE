@@ -3,12 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace ZOMCHIVE
 {
     public class PlayerDashingState : PlayerGroundedState
     {
         private PlayerDashData dashData;
+        private float startTime; // 대쉬 사용 시간
+        private int consecutiveDashesUsed; // 연속 대쉬 사용 수(카운트)
         public PlayerDashingState(PlayerMovementStateMachine playerMovementStateMachine) : base(playerMovementStateMachine)
         {
             dashData = movementData.DashData;
@@ -22,7 +25,26 @@ namespace ZOMCHIVE
             stateMachine.ReusableData.MovementSpeedModifer = dashData.SpeedModifier;
 
             AddForceOnTransitionFromStationaryState();
+
+            UpdateConsecutiveDashes(); 
+
+            startTime = Time.time;
         }
+
+        public override void OnAnimationEnterEvent()
+        {
+            base.OnAnimationEnterEvent();
+
+            if (stateMachine.ReusableData.MovementInput == Vector2.zero)
+            {
+                stateMachine.ChangeState(stateMachine.IdleState);
+
+                return;
+            }
+
+            stateMachine.ChangeState(stateMachine.SprintingState);
+        }
+
         #endregion
 
         #region Main Methods
@@ -37,6 +59,42 @@ namespace ZOMCHIVE
             // GetMovementDirection()을 재사용하면 될 것 같은데..
 
             characterRotationDirection.y = 0f;
+
+            stateMachine.Player.Rigidbody.velocity = characterRotationDirection * GetMovementSpeed();
+        }
+
+        private void UpdateConsecutiveDashes()
+        {
+            if (!IsConsecutive())
+            {
+                consecutiveDashesUsed = 0;
+            }
+
+            ++consecutiveDashesUsed;
+
+            if (consecutiveDashesUsed == dashData.ConsecutiveDashsLimitAmount)
+            {
+                consecutiveDashesUsed = 0;
+                stateMachine.Player.Input.DisableActionFor(stateMachine.Player.Input.playerActions.Dash, dashData.DashLimitReachedCooldown);
+
+            }
+        }
+
+        private bool IsConsecutive()
+        {
+            return Time.time > startTime + dashData.TimeToBeConsideredConsecutive;
+        }
+        #endregion
+
+        #region Input Methods
+        protected override void OnDashStarted(InputAction.CallbackContext context)
+        {
+           
+        }
+
+        protected override void OnMovementCanceled(InputAction.CallbackContext context)
+        {
+            
         }
         #endregion
     }

@@ -51,7 +51,20 @@ namespace ZOMCHIVE
         {
             
         }
+        public virtual void OnAnimationEnterEvent()
+        {
+            
+        }
 
+        public virtual void OnAnimationExitEvent()
+        {
+            
+        }
+
+        public virtual void OnAnimationTransitionEvent()
+        {
+            
+        }
         #endregion
 
         #region Main Methods
@@ -137,7 +150,7 @@ namespace ZOMCHIVE
 
         #endregion
 
-        #region Reuseable Methods
+        #region Reusable Methods
         protected Vector3 GetMovementDirection()
         {
             return new Vector3(stateMachine.ReusableData.MovementInput.x, 0f, stateMachine.ReusableData.MovementInput.y);

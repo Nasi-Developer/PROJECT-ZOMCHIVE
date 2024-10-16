@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,8 +8,11 @@ namespace ZOMCHIVE
 {
     public class PlayerRunningState : PlayerMovingState
     {
+        private PlayerSprintData sprintData;
+        private float startTime;
         public PlayerRunningState(PlayerMovementStateMachine playerMovementStateMachine) : base(playerMovementStateMachine)
         {
+            sprintData = movementData.SprintData;
         }
 
         #region IState Methods
@@ -17,6 +21,39 @@ namespace ZOMCHIVE
             base.StateEnter();
 
             stateMachine.ReusableData.MovementSpeedModifer = movementData.RunData.SpeedModifer;
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            if (!stateMachine.ReusableData.ShouldWalk)
+            {
+                return;
+            }
+
+            startTime = Time.time;
+
+            if (Time.time < startTime + sprintData.RunToWalkTime)
+            {
+                return;
+            }
+
+            StopRunning();
+
+        }
+        #endregion
+
+        #region Main Methods
+        private void StopRunning()
+        {
+            if(stateMachine.ReusableData.MovementInput == Vector2.zero)
+            {
+                stateMachine.ChangeState(stateMachine.IdleState);
+            }
+
+            stateMachine.ChangeState(stateMachine.WalkingState);
+
         }
         #endregion
 

@@ -78,6 +78,7 @@ namespace ZOMCHIVE
             base.AddInputActionsCallbacks();
 
             stateMachine.Player.Input.playerActions.Movement.canceled += OnMovementCanceled;
+            stateMachine.Player.Input.playerActions.Dash.started += OnDashStarted;
         }
          
         protected override void RemoveInputActionsCallbacks()
@@ -85,6 +86,7 @@ namespace ZOMCHIVE
             base.RemoveInputActionsCallbacks();
 
             stateMachine.Player.Input.playerActions.Movement.canceled -= OnMovementCanceled;
+            stateMachine.Player.Input.playerActions.Dash.started -= OnDashStarted;
         }
 
         protected virtual void OnMove()
@@ -104,6 +106,10 @@ namespace ZOMCHIVE
         protected virtual void OnMovementCanceled(InputAction.CallbackContext context)
         {
             stateMachine.ChangeState(stateMachine.IdleState);
+        }
+        protected virtual void OnDashStarted(InputAction.CallbackContext context)
+        {
+            stateMachine.ChangeState(stateMachine.DashingState);
         }
         #endregion
     }

@@ -24,6 +24,7 @@ namespace ZOMCHIVE
             base.StateEnter();
 
             stateMachine.ReusableData.MovementSpeedModifer = dashData.SpeedModifier;
+            stateMachine.ReusableData.CurrentJumpForce = airborneData.JumpData.StrongForce;
             stateMachine.ReusableData.RotationData = dashData.RotationData;
 
             AddForceOnTransitionFromStationaryState();

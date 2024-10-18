@@ -11,6 +11,7 @@ namespace ZOMCHIVE
         private PlayerSprintData sprintData;
         private bool keepSprinting;
         private float startTime;
+        private bool shouldResetSprintState;
 
         public PlayerSprintingState(PlayerMovementStateMachine playerMovementStateMachine) : base(playerMovementStateMachine)
         {
@@ -23,6 +24,10 @@ namespace ZOMCHIVE
             base.StateEnter();
 
             stateMachine.ReusableData.MovementSpeedModifer = sprintData.SpeedModifier;
+
+            stateMachine.ReusableData.CurrentJumpForce = airborneData.JumpData.StrongForce;
+
+            shouldResetSprintState = true;
 
             startTime = Time.time;
         }
@@ -51,7 +56,13 @@ namespace ZOMCHIVE
         {
             base.StateExit();
 
-            keepSprinting = false;
+            if (shouldResetSprintState)
+            {
+                keepSprinting = false;
+                stateMachine.ReusableData.ShouldSprint = false;
+            }
+
+            
         }
 
         #endregion
@@ -85,9 +96,21 @@ namespace ZOMCHIVE
 
             stateMachine.Player.Input.playerActions.Sprint.performed -= OnSprintPerformed;
         }
+        #endregion
+
+        #region Input Methods
         private void OnSprintPerformed(InputAction.CallbackContext context)
         {
             keepSprinting = true;
+
+            stateMachine.ReusableData.ShouldSprint = true;
+        }
+
+        protected override void OnJumpStarted(InputAction.CallbackContext context)
+        {
+            shouldResetSprintState = false;
+
+            base.OnJumpStarted(context);
         }
         protected override void OnMovementCanceled(InputAction.CallbackContext context)
         {

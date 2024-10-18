@@ -11,6 +11,7 @@ namespace ZOMCHIVE
         public float MovementOnSlopeSpeedModifer { get; set; } = 1f;
         public float MovementDecelerationForce { get; set; } = 1f;
         public bool ShouldWalk { get; set; }
+        public bool ShouldSprint { get; set; }
 
         private Vector3 currentTargetRotation;
         private Vector3 timeToReachTargetRotation;
@@ -46,5 +47,7 @@ namespace ZOMCHIVE
         }
 
         public PlayerRotationData RotationData { get; internal set; }
+
+        public Vector3 CurrentJumpForce { get; set; }
     }
 }

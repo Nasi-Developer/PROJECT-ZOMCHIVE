@@ -14,6 +14,14 @@ namespace ZOMCHIVE
             slopData = stateMachine.Player.ColliderUtility.SlopeData;
         }
         #region IState Methods
+
+        public override void StateEnter()
+        {
+            base.StateEnter();
+
+            UpdateShouldSprintState();
+        }
+
         public override void PhysicsUpdate()
         {
             base.PhysicsUpdate();
@@ -73,6 +81,20 @@ namespace ZOMCHIVE
 
             return slopeSpeedModifier;
         }
+        private void UpdateShouldSprintState()
+        {
+            if (!stateMachine.ReusableData.ShouldSprint)
+            {
+                return;
+            }
+
+            if (stateMachine.ReusableData.MovementInput != Vector2.zero)
+            {
+                return;
+            }
+
+            stateMachine.ReusableData.ShouldSprint = false;
+        }
 
         #endregion
         #region Reuseable Methods
@@ -82,18 +104,26 @@ namespace ZOMCHIVE
 
             stateMachine.Player.Input.playerActions.Movement.canceled += OnMovementCanceled;
             stateMachine.Player.Input.playerActions.Dash.started += OnDashStarted;
+            stateMachine.Player.Input.playerActions.Jump.started += OnJumpStarted;
         }
-         
+
         protected override void RemoveInputActionsCallbacks()
         {
             base.RemoveInputActionsCallbacks();
 
             stateMachine.Player.Input.playerActions.Movement.canceled -= OnMovementCanceled;
             stateMachine.Player.Input.playerActions.Dash.started -= OnDashStarted;
+            stateMachine.Player.Input.playerActions.Jump.started -= OnJumpStarted;
         }
 
         protected virtual void OnMove() // 이동 상태 업데이트 함수
         {
+            if (stateMachine.ReusableData.ShouldSprint)
+            {
+                stateMachine.ChangeState(stateMachine.SprintingState);
+                return;
+            }
+
             if (stateMachine.ReusableData.ShouldWalk)
             {
                 stateMachine.ChangeState(stateMachine.WalkingState);
@@ -113,6 +143,10 @@ namespace ZOMCHIVE
         protected virtual void OnDashStarted(InputAction.CallbackContext context)
         {
             stateMachine.ChangeState(stateMachine.DashingState);
+        }
+        protected virtual void OnJumpStarted(InputAction.CallbackContext context)
+        {
+            stateMachine.ChangeState(stateMachine.JumpingState);
         }
         #endregion
     }

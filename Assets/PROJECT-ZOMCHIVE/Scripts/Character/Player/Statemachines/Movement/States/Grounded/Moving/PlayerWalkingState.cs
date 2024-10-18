@@ -19,6 +19,8 @@ namespace ZOMCHIVE
             base.StateEnter();
 
             stateMachine.ReusableData.MovementSpeedModifer = movementData.WalkData.SpeedModifer;
+
+            stateMachine.ReusableData.CurrentJumpForce = airborneData.JumpData.WeakForce;
         }
         #endregion
 

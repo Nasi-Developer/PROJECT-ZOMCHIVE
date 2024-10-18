@@ -21,6 +21,8 @@ namespace ZOMCHIVE
             base.StateEnter();
 
             stateMachine.ReusableData.MovementSpeedModifer = movementData.RunData.SpeedModifer;
+
+            stateMachine.ReusableData.CurrentJumpForce = airborneData.JumpData.MediumForce;
         }
 
         public override void Update()

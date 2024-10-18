@@ -10,11 +10,13 @@ namespace ZOMCHIVE
     {
         protected PlayerMovementStateMachine stateMachine;
         protected PlayerGroundedData movementData;
+        protected PlayerAirborneData airborneData;
 
         public PlayerMovementState(PlayerMovementStateMachine playerMovementStateMachine)
         {
             stateMachine = playerMovementStateMachine;
             movementData = stateMachine.Player.Data.GroundedData;
+            airborneData = stateMachine.Player.Data.AirborneData;
             
             InitializeData();
         }
@@ -65,6 +67,16 @@ namespace ZOMCHIVE
         {
             
         }
+        public virtual void OnTriggerEnter(Collider collider)
+        {
+            if (stateMachine.Player.LayerData.IsGroundLayer(collider.gameObject.layer))
+            {
+                OnContactWithGround(collider);
+
+                return;
+            }
+        }
+
         #endregion
 
         #region Main Methods
@@ -217,7 +229,7 @@ namespace ZOMCHIVE
             return directionAngle;
         }
 
-        private Vector3 GetTargetRotationDirection(float targetAngle)
+        protected Vector3 GetTargetRotationDirection(float targetAngle)
         {
             return Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
         }
@@ -243,6 +255,12 @@ namespace ZOMCHIVE
 
             stateMachine.Player.Rigidbody.AddForce(-playerHorizontalVelocity * stateMachine.ReusableData.MovementDecelerationForce, ForceMode.Acceleration);
         }
+        protected void DecelerateVertically() // 감속 함수
+        {
+            Vector3 playerVerticalVelocity = GetPlayerVerticalVelocity();
+
+            stateMachine.Player.Rigidbody.AddForce(-playerVerticalVelocity * stateMachine.ReusableData.MovementDecelerationForce, ForceMode.Acceleration);
+        }
 
         protected bool IsMovingHorizontally(float minimumMagnitude = 0.1f)
         {
@@ -254,6 +272,14 @@ namespace ZOMCHIVE
 
             // 플레이어의 리지드바디의 Velocity가 0.1f 이상이면 true, 아니면 false
         }
+        protected bool IsMovingUp(float minimumVelocity = 0.1f)
+        {
+            return GetPlayerVerticalVelocity().y > minimumVelocity;
+        }
+        protected bool IsMovingDown(float minimumVelocity = 0.1f)
+        {
+            return GetPlayerVerticalVelocity().y < -minimumVelocity;
+        }
         protected void SetBaseRotationData()
         {
             stateMachine.ReusableData.RotationData = movementData.BaseRotationData;
@@ -261,11 +287,17 @@ namespace ZOMCHIVE
         }
         #endregion
 
+        protected virtual void OnContactWithGround(Collider collider)
+        {
+            
+        }
+
         #region Input Methods
         protected virtual void OnWalkToggleStarted(InputAction.CallbackContext context)
         {
             stateMachine.ReusableData.ShouldWalk = !stateMachine.ReusableData.ShouldWalk;
         }
+
         #endregion
     }
 }

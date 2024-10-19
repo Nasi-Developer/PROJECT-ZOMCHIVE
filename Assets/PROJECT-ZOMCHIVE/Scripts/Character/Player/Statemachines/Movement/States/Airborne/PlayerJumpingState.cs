@@ -9,6 +9,7 @@ namespace ZOMCHIVE
     {
         private PlayerJumpData jumpData;
         private bool shouldKeepRotating;
+        private bool canStartFalling;
         public PlayerJumpingState(PlayerMovementStateMachine playerMovementStateMachine) : base(playerMovementStateMachine)
         {
             jumpData = airborneData.JumpData;
@@ -27,6 +28,23 @@ namespace ZOMCHIVE
 
             Jump();
         }
+        public override void Update()
+        {
+            base.Update();
+
+            if (!canStartFalling && IsMovingUp(0f)) // Player Rigidbody의 Velocity가 0f보다 크면 
+            {
+                canStartFalling = true;
+
+            }
+
+            if (!canStartFalling || GetPlayerVerticalVelocity().y > 0)
+            {
+                return;
+            }
+
+            stateMachine.ChangeState(stateMachine.FallingState);
+        }
         public override void PhysicsUpdate()
         {
             base.PhysicsUpdate();
@@ -44,6 +62,8 @@ namespace ZOMCHIVE
         public override void StateExit()
         {
             base.StateExit();
+
+            canStartFalling = false;
 
             SetBaseRotationData();
         }

@@ -25,7 +25,7 @@ namespace ZOMCHIVE
             stateMachine.ChangeState(stateMachine.IdleState);
         }
 
-        protected virtual void ResetSprintState()
+        protected virtual void ResetSprintState() // shouldSprint √ ±‚»≠
         {
             stateMachine.ReusableData.ShouldSprint = false;
         }

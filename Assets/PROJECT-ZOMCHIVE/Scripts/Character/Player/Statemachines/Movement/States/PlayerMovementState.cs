@@ -76,6 +76,15 @@ namespace ZOMCHIVE
                 return;
             }
         }
+        public void OnTriggerExit(Collider collider)
+        {
+            if (stateMachine.Player.LayerData.IsGroundLayer(collider.gameObject.layer))
+            {
+                OnContactWithGroundExited(collider);
+
+                return;
+            }
+        }
 
         #endregion
 
@@ -239,6 +248,14 @@ namespace ZOMCHIVE
             stateMachine.Player.Rigidbody.velocity = Vector3.zero;
         }
 
+        protected void ResetVerticalVelocity()
+        {
+            Vector3 playerHorizontalVelocity = GetPlayerHorizontalVelocity();
+
+            stateMachine.Player.Rigidbody.velocity = playerHorizontalVelocity;
+            // y = 0f으로 설정하고 나머진 유지.
+        }
+
         protected virtual void AddInputActionsCallbacks()
         {
             stateMachine.Player.Input.playerActions.WalkToggle.started += OnWalkToggleStarted;
@@ -288,6 +305,10 @@ namespace ZOMCHIVE
         #endregion
 
         protected virtual void OnContactWithGround(Collider collider)
+        {
+            
+        }
+        protected virtual void OnContactWithGroundExited(Collider collider)
         {
             
         }

@@ -18,6 +18,7 @@ namespace ZOMCHIVE
         public void OnAnimationExitEvent(); // 위와 같음.
         public void OnAnimationTransitionEvent();
         public void OnTriggerEnter(Collider collider);
+        public void OnTriggerExit(Collider collider);
 
         // 플레이어의 현재 상태를 관리하는 PlayerStateMachine에 상속할 메소드 들.
     }

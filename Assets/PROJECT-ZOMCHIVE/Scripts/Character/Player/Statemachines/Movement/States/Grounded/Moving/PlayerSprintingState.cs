@@ -96,6 +96,12 @@ namespace ZOMCHIVE
 
             stateMachine.Player.Input.playerActions.Sprint.performed -= OnSprintPerformed;
         }
+
+        protected override void OnFall()
+        {
+            shouldResetSprintState = false;
+            base.OnFall();
+        }
         #endregion
 
         #region Input Methods

@@ -10,7 +10,7 @@ namespace ZOMCHIVE
         [field:Header("References")]
         [field: SerializeField] public PlayerSO Data {  get; private set; }
         [field: Header("Collisions")]
-        [field: SerializeField] public CapsuleColliderUtility ColliderUtility { get; private set; }
+        [field: SerializeField] public PlayerCapsuleColliderUtility ColliderUtility { get; private set; }
         [field: SerializeField] public PlayerLayerData LayerData { get; private set; }
         public PlayerMovementStateMachine movementStateMachine;
 
@@ -46,12 +46,18 @@ namespace ZOMCHIVE
         {
             movementStateMachine.OnTriggerEnter(collider);
         }
+        private void OnTriggerExit(Collider collider)
+        {
+            movementStateMachine.OnTriggerExit(collider);
+        }
 
         private void Update()
         {
             movementStateMachine.HandleInput();
 
             movementStateMachine.Update();
+
+            Debug.Log(Rigidbody.velocity);
         }
 
         private void FixedUpdate()

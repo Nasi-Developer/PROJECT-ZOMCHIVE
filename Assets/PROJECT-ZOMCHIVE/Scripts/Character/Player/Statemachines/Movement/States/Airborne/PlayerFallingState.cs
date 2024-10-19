@@ -8,6 +8,7 @@ namespace ZOMCHIVE
     public class PlayerFallingState : PlayerAirborneState
     {
         private PlayerFallData fallData;
+        private Vector3 playerPositionOnEnter;
         public PlayerFallingState(PlayerMovementStateMachine playerMovementStateMachine) : base(playerMovementStateMachine)
         {
             fallData = airborneData.FallData;
@@ -17,9 +18,12 @@ namespace ZOMCHIVE
         {
             base.StateEnter();
 
+            playerPositionOnEnter = stateMachine.Player.transform.position;
+
             ResetVerticalVelocity();
 
             stateMachine.ReusableData.MovementSpeedModifer = 0f;
+
         }
 
         public override void PhysicsUpdate()
@@ -51,6 +55,27 @@ namespace ZOMCHIVE
         protected override void ResetSprintState()
         {
            
+        }
+
+        protected override void OnContactWithGround(Collider collider) // ÃßÈÄ ³«ÇÏ µ¥¹ÌÁö or ³«°ø
+        {
+            float fallDistance = Mathf.Abs(playerPositionOnEnter.y - stateMachine.Player.transform.position.y);
+
+            if (fallDistance < fallData.minimumDistanceToBeConsideredHardFall)
+            {
+                stateMachine.ChangeState(stateMachine.LightLandingState);
+
+                return;
+            }
+
+            if (stateMachine.ReusableData.ShouldWalk && stateMachine.ReusableData.ShouldSprint || stateMachine.ReusableData.MovementInput == Vector2.zero)
+            {
+                stateMachine.ChangeState(stateMachine.HardLandingState);
+
+                return;
+            }
+
+            stateMachine.ChangeState(stateMachine.RollingState);
         }
         #endregion
 

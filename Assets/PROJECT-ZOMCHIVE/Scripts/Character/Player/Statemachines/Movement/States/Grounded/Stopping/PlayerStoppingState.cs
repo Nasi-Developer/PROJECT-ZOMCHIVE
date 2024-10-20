@@ -16,9 +16,12 @@ namespace ZOMCHIVE
 
         public override void StateEnter()
         {
-            base.StateEnter();
 
             stateMachine.ReusableData.MovementSpeedModifer = 0f;
+
+            SetBaseCameraRecenteringData();
+
+            base.StateEnter();
         }
 
         public override void PhysicsUpdate()
@@ -64,10 +67,6 @@ namespace ZOMCHIVE
         #endregion
 
         #region Input Methods
-        protected override void OnMovementCanceled(InputAction.CallbackContext context)
-        {
-            
-        }
 
         private void OnMovementStarted(InputAction.CallbackContext context)
         {

@@ -16,9 +16,9 @@ namespace ZOMCHIVE
         #region IState Methods
         public override void StateEnter()
         {
-            base.StateEnter();
 
             stateMachine.ReusableData.MovementSpeedModifer = rollData.SpeedModifier;
+            base.StateEnter();
             stateMachine.ReusableData.ShouldSprint = false;
         }
 

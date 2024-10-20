@@ -17,7 +17,9 @@ namespace ZOMCHIVE
             stateMachine = playerMovementStateMachine;
             movementData = stateMachine.Player.Data.GroundedData;
             airborneData = stateMachine.Player.Data.AirborneData;
-            
+
+            SetBaseCameraRecenteringData();
+
             InitializeData();
         }
 
@@ -259,11 +261,26 @@ namespace ZOMCHIVE
         protected virtual void AddInputActionsCallbacks()
         {
             stateMachine.Player.Input.playerActions.WalkToggle.started += OnWalkToggleStarted;
+
+            stateMachine.Player.Input.playerActions.Movement.performed += OnMovementPerformed;
+
+            stateMachine.Player.Input.playerActions.Look.started += OnMouseMovementStarted;
+
+            stateMachine.Player.Input.playerActions.Movement.canceled += OnMovementCanceled;
+
+
         }
 
         protected virtual void RemoveInputActionsCallbacks()
         {
             stateMachine.Player.Input.playerActions.WalkToggle.started -= OnWalkToggleStarted;
+
+            stateMachine.Player.Input.playerActions.Movement.performed -= OnMovementPerformed;
+
+            stateMachine.Player.Input.playerActions.Look.started -= OnMouseMovementStarted;
+
+            stateMachine.Player.Input.playerActions.Movement.canceled -= OnMovementCanceled;
+
         }
 
         protected void DecelerateHorizontally() // 감속 함수
@@ -302,9 +319,14 @@ namespace ZOMCHIVE
             stateMachine.ReusableData.RotationData = movementData.BaseRotationData;
             stateMachine.ReusableData.TimeToReachTargetRotation.y = stateMachine.ReusableData.RotationData.TargetRotationReachTime.y;
         }
+        protected void SetBaseCameraRecenteringData()
+        {
+            stateMachine.ReusableData.BackwardsCameraRecenteringData = movementData.BackwardsCameraRecenteringData;
+            stateMachine.ReusableData.SidewaysCameraRecenteringData = movementData.SidewayCameraRecenteringData;
+        }
         #endregion
 
-        protected virtual void OnContactWithGround(Collider collider)
+        protected virtual void OnContactWithGround(Collider collider)   
         {
             
         }
@@ -313,12 +335,91 @@ namespace ZOMCHIVE
             
         }
 
+        protected void UpdateCameraRecenteringState(Vector2 movementInput)
+        {
+            if (movementInput == Vector2.zero) // 아동하지 않을 떄
+            {
+                return;
+            }
+
+            if (movementInput == Vector2.up) // 앞으로 이동할 때
+            {
+                DisableCameraRecentering();
+
+                return;
+            }
+
+            float cameraVeritcalAngle = stateMachine.Player.MainCameraTransform.eulerAngles.x; // 카메라 수직 회전 값, eulerAngle은 양의 값만 반환
+
+            if (cameraVeritcalAngle >= 270f)
+            {
+                cameraVeritcalAngle -= 360f;
+            }
+            
+            cameraVeritcalAngle = Mathf.Abs(cameraVeritcalAngle);
+
+            if (movementInput == Vector2.down) // 뒤로 이동할 때  
+            {
+                SetCameraRecenteringState(cameraVeritcalAngle, stateMachine.ReusableData.BackwardsCameraRecenteringData);
+
+                DisableCameraRecentering();
+
+                return;
+            }
+
+            SetCameraRecenteringState(cameraVeritcalAngle, stateMachine.ReusableData.SidewaysCameraRecenteringData);
+        }
+
+        protected void SetCameraRecenteringState(float cameraVeritcalAngle, List<PlayerCameraRecenteringData> cameraRecenteringDatas)
+        {
+            foreach (PlayerCameraRecenteringData recenteringData in cameraRecenteringDatas)
+            {
+                if (!recenteringData.IsWithinRange(cameraVeritcalAngle))
+                {
+                    continue;
+                }
+
+                EnableCameraRecentering(recenteringData.WaitTime, recenteringData.RecenteringTime);
+
+                return;
+            }
+        }
+
+        protected void EnableCameraRecentering(float waitTime = -1f, float recenteringTime = -1f)
+        {
+            float movementSpeed = GetMovementSpeed();
+             
+            if (movementSpeed == 0f)
+            {
+                movementSpeed = movementData.BaseSpeed;
+            }
+
+            stateMachine.Player.CameraUtility.EnableRecentering(waitTime, recenteringTime, movementData.BaseSpeed, movementSpeed);
+        }
+
+        protected void DisableCameraRecentering(float waitTime = -1f, float recenteringTime = -1f)
+        {
+            stateMachine.Player.CameraUtility.DisableRecentering();
+        }
+
         #region Input Methods
         protected virtual void OnWalkToggleStarted(InputAction.CallbackContext context)
         {
             stateMachine.ReusableData.ShouldWalk = !stateMachine.ReusableData.ShouldWalk;
         }
+        protected virtual void OnMovementCanceled(InputAction.CallbackContext context)
+        {
+            DisableCameraRecentering();
+        }
+        private void OnMouseMovementStarted(InputAction.CallbackContext context)
+        {
+            UpdateCameraRecenteringState(stateMachine.ReusableData.MovementInput);
+        }
 
+        private void OnMovementPerformed(InputAction.CallbackContext context)
+        {
+            UpdateCameraRecenteringState(context.ReadValue<Vector2>());
+        }
         #endregion
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace ZOMCHIVE
 {
@@ -18,8 +19,8 @@ namespace ZOMCHIVE
         #region IState Methods
         public override void StateEnter()
         {
-            base.StateEnter();
 
+            base.StateEnter();
             stateMachine.ReusableData.MovementSpeedModifer = 0f;
             stateMachine.ReusableData.RotationData = jumpData.RotationData;
             stateMachine.ReusableData.MovementDecelerationForce = jumpData.DecelerationForce;
@@ -120,6 +121,13 @@ namespace ZOMCHIVE
         protected override void ResetSprintState()
         {
             
+        }   
+        #endregion
+
+        #region Input Methods
+        protected override void OnMovementCanceled(InputAction.CallbackContext context)
+        {
+
         }
         #endregion
     }

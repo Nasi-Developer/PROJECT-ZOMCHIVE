@@ -18,9 +18,10 @@ namespace ZOMCHIVE
         #region IState Methods
         public override void StateEnter()
         {
-            base.StateEnter();
 
             stateMachine.ReusableData.MovementSpeedModifer = movementData.RunData.SpeedModifer;
+
+            base.StateEnter();
 
             stateMachine.ReusableData.CurrentJumpForce = airborneData.JumpData.MediumForce;
         }
@@ -84,6 +85,8 @@ namespace ZOMCHIVE
         protected override void OnMovementCanceled(InputAction.CallbackContext context)
         {
             stateMachine.ChangeState(stateMachine.MediumStoppingState);
+
+            base.OnMovementCanceled(context);
         }
         #endregion
     }

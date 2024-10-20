@@ -21,10 +21,7 @@ namespace ZOMCHIVE
         #endregion
 
         #region Input Methods
-        protected override void OnMovementCanceled(InputAction.CallbackContext context)
-        {
-            
-        }
+
         #endregion
     }
 }

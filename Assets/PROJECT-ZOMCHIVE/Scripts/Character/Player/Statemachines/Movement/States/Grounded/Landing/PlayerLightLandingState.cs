@@ -13,9 +13,9 @@ namespace ZOMCHIVE
         #region IState Methods
         public override void StateEnter()
         {
+            stateMachine.ReusableData.MovementSpeedModifer = 0f;
             base.StateEnter();
 
-            stateMachine.ReusableData.MovementSpeedModifer = 0f;
 
             stateMachine.ReusableData.CurrentJumpForce = airborneData.JumpData.StationaryForce;
 

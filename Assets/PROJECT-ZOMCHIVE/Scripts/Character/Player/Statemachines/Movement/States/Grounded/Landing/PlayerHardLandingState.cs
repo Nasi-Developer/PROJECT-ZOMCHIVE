@@ -15,11 +15,11 @@ namespace ZOMCHIVE
         #region IState Methods
         public override void StateEnter()
         {
+            stateMachine.ReusableData.MovementSpeedModifer = 0f;
             base.StateEnter();
 
             stateMachine.Player.Input.playerActions.Movement.Disable();
 
-            stateMachine.ReusableData.MovementSpeedModifer = 0f;
 
             ResetVelocity();
         }

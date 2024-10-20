@@ -21,9 +21,9 @@ namespace ZOMCHIVE
         #region IState Methods
         public override void StateEnter()
         {
-            base.StateEnter();
 
             stateMachine.ReusableData.MovementSpeedModifer = dashData.SpeedModifier;
+            base.StateEnter();
             stateMachine.ReusableData.CurrentJumpForce = airborneData.JumpData.StrongForce;
             stateMachine.ReusableData.RotationData = dashData.RotationData;
 
@@ -132,10 +132,6 @@ namespace ZOMCHIVE
            
         }
 
-        protected override void OnMovementCanceled(InputAction.CallbackContext context)
-        {
-            
-        }
         private void OnMovementPerfomed(InputAction.CallbackContext context)
         {
             shouldKeepRotating = true;  

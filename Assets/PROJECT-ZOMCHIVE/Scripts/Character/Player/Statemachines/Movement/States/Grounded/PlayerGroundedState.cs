@@ -20,6 +20,8 @@ namespace ZOMCHIVE
             base.StateEnter();
 
             UpdateShouldSprintState();
+
+            UpdateCameraRecenteringState(stateMachine.ReusableData.MovementInput);
         }
 
         public override void PhysicsUpdate()
@@ -78,7 +80,14 @@ namespace ZOMCHIVE
         {
             float slopeSpeedModifier = movementData.SlopeSpeedAngles.Evaluate(angle);
 
-            stateMachine.ReusableData.MovementOnSlopeSpeedModifer = slopeSpeedModifier;
+            if (stateMachine.ReusableData.MovementOnSlopeSpeedModifer != slopeSpeedModifier)
+            {
+                stateMachine.ReusableData.MovementOnSlopeSpeedModifer = slopeSpeedModifier;
+
+                UpdateCameraRecenteringState(stateMachine.ReusableData.MovementInput);
+
+            }
+
 
             return slopeSpeedModifier;
         }
@@ -115,7 +124,6 @@ namespace ZOMCHIVE
         {
             base.AddInputActionsCallbacks();
 
-            stateMachine.Player.Input.playerActions.Movement.canceled += OnMovementCanceled;
             stateMachine.Player.Input.playerActions.Dash.started += OnDashStarted;
             stateMachine.Player.Input.playerActions.Jump.started += OnJumpStarted;
         }
@@ -124,7 +132,6 @@ namespace ZOMCHIVE
         {
             base.RemoveInputActionsCallbacks();
 
-            stateMachine.Player.Input.playerActions.Movement.canceled -= OnMovementCanceled;
             stateMachine.Player.Input.playerActions.Dash.started -= OnDashStarted;
             stateMachine.Player.Input.playerActions.Jump.started -= OnJumpStarted;
         }
@@ -175,10 +182,7 @@ namespace ZOMCHIVE
         #endregion
 
         #region Input Methods
-        protected virtual void OnMovementCanceled(InputAction.CallbackContext context)
-        {
-            stateMachine.ChangeState(stateMachine.IdleState);
-        }
+
         protected virtual void OnDashStarted(InputAction.CallbackContext context)
         {
             stateMachine.ChangeState(stateMachine.DashingState);

@@ -8,19 +8,31 @@ namespace ZOMCHIVE
 {
     public class PlayerWalkingState : PlayerMovingState
     {
+        private PlayerWalkData walkData;
         public PlayerWalkingState(PlayerMovementStateMachine playerMovementStateMachine) : base(playerMovementStateMachine)
         {
+            walkData = movementData.WalkData;
         }
 
 
         #region IState Methods
         public override void StateEnter()
         {
-            base.StateEnter();
 
             stateMachine.ReusableData.MovementSpeedModifer = movementData.WalkData.SpeedModifer;
 
+            stateMachine.ReusableData.BackwardsCameraRecenteringData = movementData.WalkData.BackwardsCameraRecenteringData;
+
+            base.StateEnter();
+
             stateMachine.ReusableData.CurrentJumpForce = airborneData.JumpData.WeakForce;
+        }
+
+        public override void StateExit()
+        {
+            base.StateExit();
+
+            SetBaseCameraRecenteringData();
         }
         #endregion
 
@@ -34,7 +46,10 @@ namespace ZOMCHIVE
 
         protected override void OnMovementCanceled(InputAction.CallbackContext context)
         {
+
             stateMachine.ChangeState(stateMachine.LightStoppingState);
+
+            base.OnMovementCanceled(context);
         }
         #endregion
     }

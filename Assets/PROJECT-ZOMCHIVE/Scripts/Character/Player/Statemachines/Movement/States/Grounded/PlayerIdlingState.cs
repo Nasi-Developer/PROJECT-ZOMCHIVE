@@ -7,16 +7,21 @@ namespace ZOMCHIVE
 {
     public class PlayerIdlingState : PlayerGroundedState
     {
+        private PlayerIdleData idleData;
         public PlayerIdlingState(PlayerMovementStateMachine playerMovementStateMachine) : base(playerMovementStateMachine)
         {
+            idleData = movementData.IdleData;
         }
 
         #region IState Methods
         public override void StateEnter()
         {
+            stateMachine.ReusableData.MovementSpeedModifer = 0f;
+
+            stateMachine.ReusableData.BackwardsCameraRecenteringData = idleData.BackwardsCameraRecenteringData;
+
             base.StateEnter();
 
-            stateMachine.ReusableData.MovementSpeedModifer = 0f;
 
             stateMachine.ReusableData.CurrentJumpForce = airborneData.JumpData.StationaryForce;
 

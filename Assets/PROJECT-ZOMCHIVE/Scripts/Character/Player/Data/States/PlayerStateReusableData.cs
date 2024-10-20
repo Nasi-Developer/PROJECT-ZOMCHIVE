@@ -10,6 +10,8 @@ namespace ZOMCHIVE
         public float MovementSpeedModifer { get; set; } = 1f;
         public float MovementOnSlopeSpeedModifer { get; set; } = 1f;
         public float MovementDecelerationForce { get; set; } = 1f;
+        public List<PlayerCameraRecenteringData> BackwardsCameraRecenteringData { get; set; }
+        public List<PlayerCameraRecenteringData> SidewaysCameraRecenteringData { get; set; }
         public bool ShouldWalk { get; set; }
         public bool ShouldSprint { get; set; }
 

@@ -18,11 +18,11 @@ namespace ZOMCHIVE
         {
             base.StateEnter();
 
+            stateMachine.ReusableData.MovementSpeedModifer = 0f;
             playerPositionOnEnter = stateMachine.Player.transform.position;
 
             ResetVerticalVelocity();
 
-            stateMachine.ReusableData.MovementSpeedModifer = 0f;
 
         }
 
